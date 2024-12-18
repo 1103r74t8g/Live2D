@@ -29,7 +29,6 @@ public class anim : MonoBehaviour
     {
         characterMotion();
         facialExpress();
-        //LookAtMouse();
     }
 
     void characterMotion()
@@ -49,13 +48,4 @@ public class anim : MonoBehaviour
             }
         }
     }
-    void LookAtMouse()
-    {
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = Camera.main.nearClipPlane;
-        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
-
-        transform.LookAt(new Vector3(worldPosition.x, transform.position.y, worldPosition.z));
-    }
-
 }
