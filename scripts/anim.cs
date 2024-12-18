@@ -1,79 +1,61 @@
 using UnityEngine;
+using Live2D.Cubism.Framework.Expression;
+using System.Collections.Generic;
 
 public class anim : MonoBehaviour
 {
     private Animator charAnim;
-    private Live2D.Cubism.Framework.Expression.CubismExpressionController expressionController;
+    private CubismExpressionController expressionController;
+
+    private Dictionary<KeyCode, int> expressionMapping = new Dictionary<KeyCode, int>()
+    {
+        { KeyCode.Alpha0, 0 }, // normal
+        { KeyCode.Alpha1, 1 }, // smile
+        { KeyCode.Alpha2, 2 }, // proud
+        { KeyCode.Alpha3, 3 }, // shining
+        { KeyCode.Alpha4, 4 }, // sad
+        { KeyCode.Alpha5, 5 }, // shy
+        { KeyCode.Alpha6, 6 }, // shock
+        { KeyCode.Alpha7, 7 }  // mad
+    };
+
     void Start()
     {
         charAnim = GetComponent<Animator>();
-        expressionController = GetComponent<Live2D.Cubism.Framework.Expression.CubismExpressionController>();
+        expressionController = GetComponent<CubismExpressionController>();
     }
-
 
     void Update()
     {
         characterMotion();
         facialExpress();
+        //LookAtMouse();
     }
 
     void characterMotion()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            charAnim.SetTrigger("armWavingTrigger");
-        }
-        else if (Input.GetKeyDown(KeyCode.W))
-        {
-            charAnim.SetTrigger("bodyWavingTrigger");
-        }
-        else if (Input.GetKeyDown(KeyCode.E))
-        {
-            charAnim.SetTrigger("grabHatTrigger");
-        }
+        if (Input.GetKeyDown(KeyCode.Q)) charAnim.SetTrigger("armWavingTrigger");
+        else if (Input.GetKeyDown(KeyCode.W)) charAnim.SetTrigger("bodyWavingTrigger");
+        else if (Input.GetKeyDown(KeyCode.E)) charAnim.SetTrigger("grabHatTrigger");
     }
 
     void facialExpress()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha0))
+        foreach (var key in expressionMapping.Keys)
         {
-            //normal
-            expressionController.CurrentExpressionIndex = 0;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            //smile
-            expressionController.CurrentExpressionIndex = 1;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            //proud
-            expressionController.CurrentExpressionIndex = 2;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            //shining
-            expressionController.CurrentExpressionIndex = 3;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            //sad
-            expressionController.CurrentExpressionIndex = 4;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            //shy
-            expressionController.CurrentExpressionIndex = 5;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha6))
-        {
-            //shock
-            expressionController.CurrentExpressionIndex = 6;
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha7))
-        {
-            //mad
-            expressionController.CurrentExpressionIndex = 7;
+            if (Input.GetKeyDown(key))
+            {
+                expressionController.CurrentExpressionIndex = expressionMapping[key];
+            }
         }
     }
+    void LookAtMouse()
+    {
+        Vector3 mousePosition = Input.mousePosition;
+        mousePosition.z = Camera.main.nearClipPlane;
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+
+        transform.LookAt(new Vector3(worldPosition.x, transform.position.y, worldPosition.z));
+    }
+
 }
