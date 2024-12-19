@@ -22,8 +22,8 @@ public class anim : MonoBehaviour
     private bool isAnimating = false;  // 用來標記動畫是否播放中
     private float animationCooldownTime = 5f;  // 動畫播放後的冷卻時間 (5秒)
     private float cooldownTimer = 0f;  // 計時器，用來跟蹤冷卻時間
-    private float expressionChangeTimer = 50f;  // 隔五十秒
-    private float expressionDuration = 10f;    // 笑十秒
+    private float expressionChangeTimer = 60f;  // 隔60秒
+    private float expressionDuration = 20f;    // 笑20秒
     private float expressionDurationTimer = 0f;
     private int currentExpression = 0;  // 目前表情的索引
     private bool isExpressionActive = false;
