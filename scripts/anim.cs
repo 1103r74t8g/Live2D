@@ -175,7 +175,7 @@ public class anim : MonoBehaviour
     {
         if (!isExpressionActive)
         {
-            // 倒數 50s 後笑一下
+            // 倒數 60s 後笑一下
             expressionChangeTimer -= Time.deltaTime;
 
             if (expressionChangeTimer <= 0f)
@@ -187,13 +187,13 @@ public class anim : MonoBehaviour
                 expressionDurationTimer = expressionDuration;
                 isExpressionActive = true;
 
-                // 重置90s計時器
-                expressionChangeTimer = 90f;
+                // 重置60s計時器
+                expressionChangeTimer = 60f;
             }
         }
         else
         {
-            // 當表情啟動後，倒數 30 秒
+            // 當表情啟動後，倒數 20 秒
             expressionDurationTimer -= Time.deltaTime;
 
             if (expressionDurationTimer <= 0f)
@@ -252,7 +252,7 @@ public class anim : MonoBehaviour
             if (crossCountShyLine >= 10 && timerShy <= 5f && !isShockActive)
             {
                 expressionController.CurrentExpressionIndex = 6;  // 震驚表情 (shock)
-                expressionChangeTimer = 50f;// 重新計時50秒，不然會突然笑一下
+                expressionChangeTimer = 60f;// 重新計時60秒，不然會突然笑一下
                 Debug.Log("Shock Expression Activated!");
                 isShockActive = true;
 
@@ -304,7 +304,7 @@ public class anim : MonoBehaviour
                     charAnim.SetTrigger("grabHatTrigger");
                     isAnimating = true;  // 開始動畫
                     cooldownTimer = animationCooldownTime;  // 設定冷卻時間為5秒
-                    expressionChangeTimer = 50f;// 重新計時50秒，不然會突然笑一下
+                    expressionChangeTimer = 60f;// 重新計時60秒，不然會突然笑一下
                     Debug.Log("mad or shy: " + randomExpression);
 
                     // 重置計時器和穿越次數
