@@ -1,12 +1,10 @@
 using UnityEngine;
 using Live2D.Cubism.Framework.Expression;
 using System.Collections.Generic;
-
 public class anim : MonoBehaviour
 {
     private Animator charAnim;
     private CubismExpressionController expressionController;
-
     private Dictionary<KeyCode, int> expressionMapping = new Dictionary<KeyCode, int>()
     {
         { KeyCode.Alpha0, 0 }, // normal
@@ -32,7 +30,6 @@ public class anim : MonoBehaviour
     {
         charAnim = GetComponent<Animator>();
         expressionController = GetComponent<CubismExpressionController>();
-
     }
 
     void Update()
