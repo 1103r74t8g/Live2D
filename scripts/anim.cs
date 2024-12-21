@@ -30,6 +30,9 @@ public class anim : MonoBehaviour
     {
         charAnim = GetComponent<Animator>();
         expressionController = GetComponent<CubismExpressionController>();
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false; // 避免遊戲啟動時自動播放
+        audioSource.volume = 1.0f; // 設定音量
     }
 
     void Update()
@@ -47,6 +50,9 @@ public class anim : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q)) charAnim.SetTrigger("armWavingTrigger");
         else if (Input.GetKeyDown(KeyCode.W)) charAnim.SetTrigger("bodyWavingTrigger");
         else if (Input.GetKeyDown(KeyCode.E)) charAnim.SetTrigger("grabHatTrigger");
+        else if (Input.GetKeyDown(KeyCode.R)) charAnim.SetTrigger("successTrigger");
+        else if (Input.GetKeyDown(KeyCode.T)) charAnim.SetTrigger("failTrigger");
+        else if (Input.GetKeyDown(KeyCode.Y)) charAnim.SetTrigger("rabbitTrigger");
     }
 
     void facialExpress()
@@ -275,6 +281,7 @@ public class anim : MonoBehaviour
                 timerShy = 0f;
                 crossCountShyLine = 0;
                 timerShock += Time.deltaTime; // 計時
+                Debug.Log(timerShock);
 
                 // 判斷滑鼠是否在shock範圍內
                 if (IsMouseInShyLine(mousePosition))
@@ -342,5 +349,35 @@ public class anim : MonoBehaviour
         }
 
         return false;
+    }
+
+    public AudioClip[] soundEffects; // 拖入聲音剪輯
+    private AudioSource audioSource;
+    private float cooldownTime = 5f; // 冷卻時間
+    private bool canClick = true; // 控制是否能點擊
+    private void OnMouseDown()
+    {
+        if (!isAnimating && canClick)
+        {
+            PlayRandomSound();
+            StartCoroutine(HandleCooldown());
+        }
+    }
+
+    // 隨機播放聲音
+    void PlayRandomSound()
+    {
+        if (soundEffects.Length > 0)
+        {
+            int index = Random.Range(0, soundEffects.Length);
+            audioSource.clip = soundEffects[index];
+            audioSource.Play();
+        }
+    }
+    System.Collections.IEnumerator HandleCooldown()
+    {
+        canClick = false; // 禁止點擊
+        yield return new WaitForSeconds(cooldownTime); // 等待冷卻時間
+        canClick = true; // 恢復點擊
     }
 }
