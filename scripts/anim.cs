@@ -226,108 +226,105 @@ public class anim : MonoBehaviour
             timerShy = 0f;       // 計時重置
         }
 
-        // 如果左鍵持續被按住
-        if (Input.GetMouseButton(0)) // 左鍵持續按下
+        // 獲取滑鼠當前位置
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0;  // 設定滑鼠 Z 軸為 0
+
+        // 更新計時
+        timerShy += Time.deltaTime;
+
+        // 判斷滑鼠是否在設定的新範圍內
+        if (IsMouseInShyLine(mousePosition) && Input.GetMouseButton(0))
         {
-            // 獲取滑鼠當前位置
-            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            mousePosition.z = 0;  // 設定滑鼠 Z 軸為 0
-
-            // 更新計時
-            timerShy += Time.deltaTime;
-
-            // 判斷滑鼠是否在設定的新範圍內
-            if (IsMouseInShyLine(mousePosition))
+            if (!isMouseOverShyLine) // 滑鼠從外部進入範圍
             {
-                if (!isMouseOverShyLine) // 滑鼠從外部進入範圍
+                crossCountShyLine++; // 穿越次數 +1
+                Debug.Log("Shock Count: " + crossCountShyLine);
+            }
+            isMouseOverShyLine = true;
+        }
+        else
+        {
+            isMouseOverShyLine = false; // 滑鼠不在範圍內
+        }
+
+        // 如果滑鼠在5秒內穿越範圍 >= 10次，觸發表情變更為 shock
+        if (crossCountShyLine >= 10 && timerShy <= 5f && !isShockActive)
+        {
+            expressionController.CurrentExpressionIndex = 6;  // 震驚表情 (shock)
+            expressionChangeTimer = 60f;// 重新計時60秒，不然會突然笑一下
+            Debug.Log("Shock Expression Activated!");
+            isShockActive = true;
+
+            // 重置計時器與穿越次數
+            crossCountShyLine = 0;
+            timerShy = 0f;
+            isMouseOverShyLine = false;
+        }
+
+        // 如果超過5秒未觸發，重置計數器
+        if (timerShy > 5f)
+        {
+            Debug.Log("New Resetting counter.");
+            crossCountShyLine = 0;
+            timerShy = 0f;
+            isMouseOverShyLine = false;
+            isShockActive = false;
+        }
+
+        // Shock後進行來回穿越判斷
+        if (isShockActive)
+        {
+            timerShy = 0f;
+            crossCountShyLine = 0;
+            timerShock += Time.deltaTime; // 計時
+            Debug.Log(timerShock);
+
+            // 判斷滑鼠是否在shock範圍內
+            if (IsMouseInShyLine(mousePosition) && Input.GetMouseButton(0))
+            {
+                if (!isMouseOverShockLine)
                 {
-                    crossCountShyLine++; // 穿越次數 +1
-                    Debug.Log("Shock Count: " + crossCountShyLine);
+                    crossCountShock++;  // 穿越次數 +1
+                    Debug.Log("Shy Count: " + crossCountShock);
                 }
-                isMouseOverShyLine = true;
+                isMouseOverShockLine = true;
             }
             else
             {
-                isMouseOverShyLine = false; // 滑鼠不在範圍內
+                isMouseOverShockLine = false; // 滑鼠不在範圍內
             }
 
-            // 如果滑鼠在5秒內穿越範圍 >= 10次，觸發表情變更為 shock
-            if (crossCountShyLine >= 10 && timerShy <= 5f && !isShockActive)
+            // 判斷滑鼠是否來回穿越 20 次
+            if (crossCountShock >= 20 && timerShock <= 10f)
             {
-                expressionController.CurrentExpressionIndex = 6;  // 震驚表情 (shock)
+                // 隨機選擇生氣或害羞的表情
+                int randomExpression = (Random.Range(0, 2) == 0) ? 5 : 7;  // 50%機率選擇5或7                                                                               // 7: mad, 5: shy
+                expressionController.CurrentExpressionIndex = randomExpression;
+                currentExpression = randomExpression;
+                charAnim.SetTrigger("grabHatTrigger");
+                isAnimating = true;  // 開始動畫
+                cooldownTimer = animationCooldownTime;  // 設定冷卻時間為5秒
                 expressionChangeTimer = 60f;// 重新計時60秒，不然會突然笑一下
-                Debug.Log("Shock Expression Activated!");
-                isShockActive = true;
+                Debug.Log("mad or shy: " + randomExpression);
 
-                // 重置計時器與穿越次數
-                crossCountShyLine = 0;
-                timerShy = 0f;
-                isMouseOverShyLine = false;
-            }
-
-            // 如果超過5秒未觸發，重置計數器
-            if (timerShy > 5f)
-            {
-                Debug.Log("New Resetting counter.");
-                crossCountShyLine = 0;
-                timerShy = 0f;
-                isMouseOverShyLine = false;
+                // 重置計時器和穿越次數
+                crossCountShock = 0;
+                timerShock = 0f;
                 isShockActive = false;
             }
-
-            // Shock後進行來回穿越判斷
-            if (isShockActive)
+            else if (timerShock > 10f)
             {
-                timerShy = 0f;
-                crossCountShyLine = 0;
-                timerShock += Time.deltaTime; // 計時
-                Debug.Log(timerShock);
-
-                // 判斷滑鼠是否在shock範圍內
-                if (IsMouseInShyLine(mousePosition))
-                {
-                    if (!isMouseOverShockLine)
-                    {
-                        crossCountShock++;  // 穿越次數 +1
-                        Debug.Log("Shy Count: " + crossCountShock);
-                    }
-                    isMouseOverShockLine = true;
-                }
-                else
-                {
-                    isMouseOverShockLine = false; // 滑鼠不在範圍內
-                }
-
-                // 判斷滑鼠是否來回穿越 20 次
-                if (crossCountShock >= 20 && timerShock <= 10f)
-                {
-                    // 隨機選擇生氣或害羞的表情
-                    int randomExpression = (Random.Range(0, 2) == 0) ? 5 : 7;  // 50%機率選擇5或7                                                                               // 7: mad, 5: shy
-                    expressionController.CurrentExpressionIndex = randomExpression;
-                    currentExpression = randomExpression;
-                    charAnim.SetTrigger("grabHatTrigger");
-                    isAnimating = true;  // 開始動畫
-                    cooldownTimer = animationCooldownTime;  // 設定冷卻時間為5秒
-                    expressionChangeTimer = 60f;// 重新計時60秒，不然會突然笑一下
-                    Debug.Log("mad or shy: " + randomExpression);
-
-                    // 重置計時器和穿越次數
-                    crossCountShock = 0;
-                    timerShock = 0f;
-                    isShockActive = false;
-                }
-                else if (timerShock > 10f)
-                {
-                    // 如果超過 10 秒，回到原來的表情
-                    expressionController.CurrentExpressionIndex = 0;  // 恢復 normal
-                    Debug.Log("Back to normal expression.");
-                    isShockActive = false;
-                    timerShock = 0f;
-                }
+                // 如果超過 10 秒，回到原來的表情
+                expressionController.CurrentExpressionIndex = 0;  // 恢復 normal
+                Debug.Log("Back to normal expression.");
+                isShockActive = false;
+                timerShock = 0f;
             }
-
-
         }
+
+
+
     }
 
     // 判斷滑鼠是否在設定的shock範圍內
@@ -355,12 +352,22 @@ public class anim : MonoBehaviour
     private AudioSource audioSource;
     private float cooldownTime = 5f; // 冷卻時間
     private bool canClick = true; // 控制是否能點擊
+    public Animator questionAnimator;
+    public string animationTriggerName = "PlayQuestion";
     private void OnMouseDown()
     {
-        if (!isAnimating && canClick)
+        if (!isAnimating && canClick && currentExpression != 7)
         {
             PlayRandomSound();
+            PlayDialogAnimation();
             StartCoroutine(HandleCooldown());
+        }
+    }
+    void PlayDialogAnimation()
+    {
+        if (questionAnimator != null)
+        {
+            questionAnimator.SetTrigger(animationTriggerName);
         }
     }
 
